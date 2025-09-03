@@ -3,7 +3,7 @@ import { ParameterRankLetter, RankLetter } from "./rankLetter";
 export class Rank {
     rankLetter: RankLetter | ParameterRankLetter;
 
-    constructor(rankLetter: RankLetter){
+    constructor(rankLetter: RankLetter | ParameterRankLetter){
         this.rankLetter = rankLetter;
     }
 

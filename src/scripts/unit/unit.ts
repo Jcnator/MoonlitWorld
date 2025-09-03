@@ -1,55 +1,59 @@
 import { RankLetter, ParameterRankLetter } from "../attributes/rank/rankLetter";
+import { ParameterType } from "../../constants/parameterType";
+import { UnitRankedAttributes } from "./unitRankedAttributes";
+import { ExpertiseSkillType, MartialSkillType } from "../../constants/skillType";
+import { PARAMETER_MODIFIER_VALUE_PER_RANK, SKILL_MODIFIER_VALUE_PER_RANK } from "../../constants/modifierValuesPerRank";
 
 export interface UnitProps {
     unitParameterProps: UnitParameterRankProps;
     unitSkillProps: UnitSkillsRankProps;
 }
 
-interface UnitParameterRankProps {
-    strRank: ParameterRankLetter;
-    endRank: ParameterRankLetter;
-    aglRank: ParameterRankLetter;
-    magRank: ParameterRankLetter;
-    lukRank: ParameterRankLetter;
+export interface UnitRankProps {
+    [key: string]: RankLetter | ParameterRankLetter
+}
+
+interface UnitParameterRankProps extends UnitRankProps {
+    [ParameterType.Strength]: ParameterRankLetter;
+    [ParameterType.Endurance]: ParameterRankLetter;
+    [ParameterType.Agility]: ParameterRankLetter;
+    [ParameterType.Magic]: ParameterRankLetter;
+    [ParameterType.Luck]: ParameterRankLetter;
 }
 
 interface UnitSkillsRankProps {
     unitExpertiseSkillsProps: UnitExpertiseSkillsProps,
     unitMartialSkillsProps: UnitMartialSkillsProps
-
 }
 
-interface UnitExpertiseSkillsProps {
-    academiaRank: RankLetter,
-    stealthRank: RankLetter,
-    technologyRank: RankLetter,
-    survivalRank: RankLetter,
-    ridingRank: RankLetter
+interface UnitExpertiseSkillsProps extends UnitRankProps{
+    [ExpertiseSkillType.Academia]: RankLetter,
+    [ExpertiseSkillType.Riding]: RankLetter,
+    [ExpertiseSkillType.Stealth]: RankLetter,
+    [ExpertiseSkillType.Survival]: RankLetter,
+    [ExpertiseSkillType.Technology]: RankLetter
 }
 
-interface UnitMartialSkillsProps {
-    handToHandRank: RankLetter,
-    weaponMasteryRank: RankLetter,
-    marksmanshipRank: RankLetter
+interface UnitMartialSkillsProps extends UnitRankProps{
+    [MartialSkillType.HandToHand]: RankLetter,
+    [MartialSkillType.Marksmanship]: RankLetter,
+    [MartialSkillType.WeaponMastery]: RankLetter
 }
 
 
 export class Unit {
     name: string;
-    parameterRanks: UnitRankedParameters;
-    expertiseSkillsRanks: UnitRankedExpertiseSkills;
-    martialSkillsRanks: UnitRankedMartialSkills;
-
+    parameters: UnitRankedAttributes;
+    expertiseSkills: UnitRankedAttributes;
+    martialSkills: UnitRankedAttributes;
 
     constructor(name: string, unitProps: UnitProps) {
         this.name = name;
-        this.parameterRanks = this.initializeParameters(unitProps.unitParameterProps);
-        this.expertiseSkillsRanks = this.initializeExperetiseSkills(unitProps.unitSkillProps.unitExpertiseSkillsProps);
-        this.martialSkillsRanks = this.initializeMartialSkills(unitProps.unitSkillProps.unitMartialSkillsProps);
+        unitProps.unitParameterProps
+        this.parameters = UnitRankedAttributes.initializeRankedAttributesFromRankLetterRecord(unitProps.unitParameterProps, PARAMETER_MODIFIER_VALUE_PER_RANK);
+        this.expertiseSkills = UnitRankedAttributes.initializeRankedAttributesFromRankLetterRecord(unitProps.unitSkillProps.unitExpertiseSkillsProps, SKILL_MODIFIER_VALUE_PER_RANK);
+        this.martialSkills = UnitRankedAttributes.initializeRankedAttributesFromRankLetterRecord(unitProps.unitSkillProps.unitMartialSkillsProps, SKILL_MODIFIER_VALUE_PER_RANK);
     }
 
-    getCheckBonus(parameterType: ParameterType): number {
-        const parameterCheckBonus = this.parameterRanks.rankedAbilityScores[parameterType].getBonus();
-        return parameterCheckBonus;
-    }
+
 };
