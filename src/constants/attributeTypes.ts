@@ -34,3 +34,11 @@ export enum SaintGraphNonHumanSkills {
     Homunculus = "Homunculus",
     DeadApostle = "DeadApostle"
 }
+
+export enum InjurySeverity {
+    None,
+    Minor,
+    Moderate,
+    Severe,
+    Critical
+}

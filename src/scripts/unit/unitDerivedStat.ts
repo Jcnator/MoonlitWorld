@@ -1,7 +1,7 @@
 import { Stat } from "../attributes/stats/stat";
 import { getRecordSum } from "../utils/recordUtils";
 
-interface UnitDerivedStatProps {
+export interface UnitDerivedStatProps {
     readonly stat: Stat;
     readonly specificBonuses?: Record<string, number>;
     readonly specificPenalties?: Record<string, number>;

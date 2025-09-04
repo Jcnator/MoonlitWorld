@@ -2,6 +2,8 @@ export const HP_VALUE_PER_END_RANK = 20;
 export const MIN_HP_VALUE = 10;
 
 export const MINOR_INJURIES_PER_END_RANK = 1;
+export const MIN_MINOR_INJURIES = 1;
+export const MIN_MODERATE_INJURIES = 1;
 
 export const MANA_VALUE_PER_MAG_RANK = 20;
 

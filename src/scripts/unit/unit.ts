@@ -60,7 +60,7 @@ interface UnitNonHumanRanksProps extends UnitRankProps {
 
 export class Unit {
     readonly name: string;
-    
+
     readonly parameters: UnitRankedAttributesGroup;
     readonly expertiseSkills: UnitRankedAttributesGroup;
     readonly martialSkills: UnitRankedAttributesGroup;
@@ -119,7 +119,7 @@ export class Unit {
 
     private initializeFateDice(){
         const luck = this.parameters.unitRankedAttributes[ParameterType.Luck].rankedAttribute;
-        const fateDiceFromLuk = new AttributeDerivedStat(luck,FATE_DICE_PER_LUCK_RANK);
+        const fateDiceFromLuk = new AttributeDerivedStat(luck, FATE_DICE_PER_LUCK_RANK);
         const fateDice = new VariableStat({
             cumulativeAttributeDerivedStats: {
                 [ParameterType.Luck]: fateDiceFromLuk

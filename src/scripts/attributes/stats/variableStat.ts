@@ -1,6 +1,6 @@
 import { Stat, StatProps } from "./stat";
 
-interface VariableStatProps extends StatProps {
+export interface VariableStatProps extends StatProps {
     initialCurrentValue?: number
 }
 
