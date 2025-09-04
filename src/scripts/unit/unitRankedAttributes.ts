@@ -1,28 +1,38 @@
 import { RankedAttribute } from "../attributes/rankedAttributes/rankedAttribute"
-import { Rank } from "../attributes/rank/rank";
 import { UnitRankProps } from "./unit";
 
+function getRecordSum(record: Record<string, number>){
+    let sum = 0;
+    Object.values(record).forEach(value => {
+        sum += value;
+    })
+    return sum;
+}
+
+export class UnitRankedAttribute {
+    readonly rankedAttribute: RankedAttribute
+    additionalModifierBonuses: Record<string, number> = {}
+    modifierPenalties: Record<string, number> = {}
+
+    constructor(rankedAttribute: RankedAttribute){
+        this.rankedAttribute = rankedAttribute;
+    }
+
+    getCheckBonus(): number {
+        return this.rankedAttribute.getModifier() +  getRecordSum(this.additionalModifierBonuses) - getRecordSum(this.modifierPenalties);
+    }
+
+}
+
 export class UnitRankedAttributes {
-    readonly rankedAttributes: Record<string, RankedAttribute>;
-    readonly specificBonus: Record<string, number> = {}
-    readonly specificPenalty: Record<string, number> = {}
+    unitRankedAttributes: Record<string, UnitRankedAttribute>
 
-    constructor(rankedAttributes: Record<string, RankedAttribute>){
-        this.rankedAttributes = rankedAttributes;
+    constructor(unitRankedAttributes: Record<string, UnitRankedAttribute>){
+        this.unitRankedAttributes = unitRankedAttributes;
     }
 
-    static initializeRankedAttributesFromRankLetterRecord(attributeRanks: UnitRankProps, modifierValuePerRank: number){
-        const rankedAttributes: Record<string, RankedAttribute> = {};
-        Object.entries(attributeRanks).forEach(([type, rankLetter]) => {
-            const rank = new Rank(rankLetter);
-            const rankedAttribute = new RankedAttribute(rank, modifierValuePerRank);
-            rankedAttributes[type] = rankedAttribute;
-        });
-        return new UnitRankedAttributes(rankedAttributes);
-    }
+    static initializeRankedAttributesFromRankLetterRecord(unitRankProps: UnitRankProps, modifierValuePerRank: number){
 
-    getCheckBonus(attributeType: string): number {
-        return this.rankedAttributes[attributeType].getModifier() + this.specificBonus[attributeType] + this.specificPenalty[attributeType];
     }
 
 }

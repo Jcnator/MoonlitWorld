@@ -1,7 +1,8 @@
 import { RankLetter, ParameterRankLetter } from "../attributes/rank/rankLetter";
 import { ParameterType, ExpertiseSkillType, MartialSkillType, SaintGraphNonHumanSkills } from "../../constants/attributeTypes";
-import { UnitRankedAttributes } from "./unitRankedAttributes";
+import { UnitRankedAttribute } from "./unitRankedAttributes";
 import { PARAMETER_MODIFIER_VALUE_PER_RANK, SKILL_MODIFIER_VALUE_PER_RANK } from "../../constants/modifierValuesPerRank";
+import { VariableStat } from "../attributes/stats/variableStat";
 
 export interface UnitProps {
     unitParameterProps: UnitParameterRankProps;
@@ -61,6 +62,10 @@ export class Unit {
     readonly magecraftMasteries: UnitRankedAttributes;
     readonly mysticEyes: UnitRankedAttributes;
     readonly nonHumanRanks: UnitRankedAttributes;
+
+    readonly hitPoints: VariableStat;
+    readonly mana: VariableStat;
+    readonly fateDice: VariableStat;
 
 
     constructor(name: string, unitProps: UnitProps) {
