@@ -1,5 +1,11 @@
 import { RankedAttribute } from "../rankedAttributes/rankedAttribute";
 
+export interface AttributeDerivedStatProps {
+    rankedAttribute: RankedAttribute, 
+    valuePerRankOfAttribute: number,
+
+}
+
 export class AttributeDerivedStat {
     readonly rankedAttribute: RankedAttribute;
     readonly valuePerRankOfAttribute: number;
@@ -12,4 +18,5 @@ export class AttributeDerivedStat {
     getStatValue(){
         return this.rankedAttribute.rank.rankLetter * this.valuePerRankOfAttribute;
     }
+
 }

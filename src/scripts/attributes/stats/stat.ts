@@ -11,14 +11,14 @@ export interface StatProps {
 export class Stat {
     readonly inherentValue: number;
     readonly minValue: number;
-    readonly cumulativeStatValuesFromAttributes?: Record<string, AttributeDerivedStat>;
+    readonly cumulativeStatValuesFromAttributes: Record<string, AttributeDerivedStat>;
     readonly hirearchicalStatValueFromAttributes?: HirearchicalAttributesDerivedStat
     value: number;
 
     constructor(props: StatProps){
         this.inherentValue = props.inherentValue ? props.inherentValue : 0;
         this.minValue = props.minValue ? props.minValue : 0;
-        this.cumulativeStatValuesFromAttributes = props.cumulativeAttributeDerivedStats;
+        this.cumulativeStatValuesFromAttributes = props.cumulativeAttributeDerivedStats ? props.cumulativeAttributeDerivedStats: {};
         this.hirearchicalStatValueFromAttributes = props.hirearchicalAttribtueDerivedStats;
         this.value = this.initializeStatValue();
     }

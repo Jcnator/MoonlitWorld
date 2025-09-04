@@ -7,6 +7,7 @@ import { UnitDerivedStat } from "./unitDerivedStat";
 import { AttributeDerivedStat } from "../attributes/stats/attributeDerivedStat";
 import { FATE_DICE_PER_LUCK_RANK, HP_VALUE_PER_END_RANK, MANA_VALUE_PER_MAG_RANK, MIN_HP_VALUE } from "../../constants/derivedStatValuesPerRank";
 import { Stat } from "../attributes/stats/stat";
+import { UnitInjuries } from "./unitInjuries";
 
 export interface UnitProps {
     unitParameterProps: UnitParameterRankProps;
@@ -69,6 +70,7 @@ export class Unit {
     readonly nonHumanRanks: UnitRankedAttributesGroup;
 
     readonly hitPoints: VariableStat;
+    readonly injuries: UnitInjuries;
     readonly mana: VariableStat;
     readonly fateDice: VariableStat;
     readonly initiative: UnitDerivedStat;
@@ -90,9 +92,14 @@ export class Unit {
         this.hitPoints = this.initializeHitPoints();
         this.mana = this.initializeMana();
         this.fateDice = this.initializeFateDice();
+        this.injuries = new UnitInjuries({
+            [ParameterType.Endurance]: this.parameters.unitRankedAttributes[ParameterType.Endurance].rankedAttribute,
+            [ExpertiseSkillType.Survival]: this.expertiseSkills.unitRankedAttributes[ExpertiseSkillType.Survival].rankedAttribute
+        });
 
         this.initiative = this.initializeInititiative();
     }
+
 
     private initializeHitPoints() {
         const endurance = this.parameters.unitRankedAttributes[ParameterType.Endurance].rankedAttribute;

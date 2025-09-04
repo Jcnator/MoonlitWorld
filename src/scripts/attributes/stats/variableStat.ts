@@ -40,4 +40,6 @@ export class VariableStat extends Stat {
         this.value = this.initializeStatValue();
         this.currentValue = Math.floor(valueProportion * this.currentValue);
     }
+
+    
 }
