@@ -1,12 +1,11 @@
 import { RankedAttribute } from "../attributes/rankedAttributes/rankedAttribute"
-import { RankLetter } from "../attributes/rank/rankLetter";
 import { Rank } from "../attributes/rank/rank";
 import { UnitRankProps } from "./unit";
 
 export class UnitRankedAttributes {
-    rankedAttributes: Record<string, RankedAttribute>;
-    specificBonus: Record<string, number> = {}
-    specificPenalty: Record<string, number> = {}
+    readonly rankedAttributes: Record<string, RankedAttribute>;
+    readonly specificBonus: Record<string, number> = {}
+    readonly specificPenalty: Record<string, number> = {}
 
     constructor(rankedAttributes: Record<string, RankedAttribute>){
         this.rankedAttributes = rankedAttributes;
@@ -22,9 +21,8 @@ export class UnitRankedAttributes {
         return new UnitRankedAttributes(rankedAttributes);
     }
 
-    
-        getCheckBonus(attributeType: string): number {
-            return this.rankedAttributes[attributeType].getModifier() + this.specificBonus[attributeType] + this.specificPenalty[attributeType];
-        }
+    getCheckBonus(attributeType: string): number {
+        return this.rankedAttributes[attributeType].getModifier() + this.specificBonus[attributeType] + this.specificPenalty[attributeType];
+    }
 
 }
