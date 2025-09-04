@@ -1,8 +1,12 @@
 import { RankLetter, ParameterRankLetter } from "../attributes/rank/rankLetter";
 import { ParameterType, ExpertiseSkillType, MartialSkillType, SaintGraphNonHumanSkills } from "../../constants/attributeTypes";
-import { UnitRankedAttribute } from "./unitRankedAttributes";
-import { PARAMETER_MODIFIER_VALUE_PER_RANK, SKILL_MODIFIER_VALUE_PER_RANK } from "../../constants/modifierValuesPerRank";
+import { UnitRankedAttributesGroup } from "./unitRankedAttributesGroup";
+import { PARAMETER_MODIFIER_VALUE_PER_RANK, RANK_VALUE, SKILL_MODIFIER_VALUE_PER_RANK } from "../../constants/modifierValuesPerRank";
 import { VariableStat } from "../attributes/stats/variableStat";
+import { UnitDerivedStat } from "./unitDerivedStat";
+import { AttributeDerivedStat } from "../attributes/stats/attributeDerivedStat";
+import { FATE_DICE_PER_LUCK_RANK, HP_VALUE_PER_END_RANK, MANA_VALUE_PER_MAG_RANK, MIN_HP_VALUE } from "../../constants/derivedStatValuesPerRank";
+import { Stat } from "../attributes/stats/stat";
 
 export interface UnitProps {
     unitParameterProps: UnitParameterRankProps;
@@ -56,29 +60,86 @@ interface UnitNonHumanRanksProps extends UnitRankProps {
 
 export class Unit {
     readonly name: string;
-    readonly parameters: UnitRankedAttributes;
-    readonly expertiseSkills: UnitRankedAttributes;
-    readonly martialSkills: UnitRankedAttributes;
-    readonly magecraftMasteries: UnitRankedAttributes;
-    readonly mysticEyes: UnitRankedAttributes;
-    readonly nonHumanRanks: UnitRankedAttributes;
+    
+    readonly parameters: UnitRankedAttributesGroup;
+    readonly expertiseSkills: UnitRankedAttributesGroup;
+    readonly martialSkills: UnitRankedAttributesGroup;
+    readonly magecraftMasteries: UnitRankedAttributesGroup;
+    readonly mysticEyes: UnitRankedAttributesGroup;
+    readonly nonHumanRanks: UnitRankedAttributesGroup;
 
     readonly hitPoints: VariableStat;
     readonly mana: VariableStat;
     readonly fateDice: VariableStat;
+    readonly initiative: UnitDerivedStat;
 
 
     constructor(name: string, unitProps: UnitProps) {
         this.name = name;
-        this.parameters = UnitRankedAttributes.initializeRankedAttributesFromRankLetterRecord(unitProps.unitParameterProps, PARAMETER_MODIFIER_VALUE_PER_RANK);
+        this.parameters = UnitRankedAttributesGroup.initializeRankedAttributesFromRankLetterRecord(unitProps.unitParameterProps, PARAMETER_MODIFIER_VALUE_PER_RANK);
 
         const unitSkillProps = unitProps.unitSkillProps;
-        this.expertiseSkills = UnitRankedAttributes.initializeRankedAttributesFromRankLetterRecord(unitSkillProps.unitExpertiseSkillsProps, SKILL_MODIFIER_VALUE_PER_RANK);
-        this.martialSkills = UnitRankedAttributes.initializeRankedAttributesFromRankLetterRecord(unitSkillProps.unitMartialSkillsProps, SKILL_MODIFIER_VALUE_PER_RANK);
+        this.expertiseSkills = UnitRankedAttributesGroup.initializeRankedAttributesFromRankLetterRecord(unitSkillProps.unitExpertiseSkillsProps, SKILL_MODIFIER_VALUE_PER_RANK);
+        this.martialSkills = UnitRankedAttributesGroup.initializeRankedAttributesFromRankLetterRecord(unitSkillProps.unitMartialSkillsProps, SKILL_MODIFIER_VALUE_PER_RANK);
 
         const unitSaintGraphSkilLProps = unitProps.unitSaintGraphSkillProps;
-        this.magecraftMasteries = UnitRankedAttributes.initializeRankedAttributesFromRankLetterRecord(unitSaintGraphSkilLProps.unitMagecraftMasteryProps, SKILL_MODIFIER_VALUE_PER_RANK);
-        this.mysticEyes = UnitRankedAttributes.initializeRankedAttributesFromRankLetterRecord(unitSaintGraphSkilLProps.unitMysticEyesProps, PARAMETER_MODIFIER_VALUE_PER_RANK);
-        this.nonHumanRanks = UnitRankedAttributes.initializeRankedAttributesFromRankLetterRecord(unitSaintGraphSkilLProps.unitNonHumanRankProps, PARAMETER_MODIFIER_VALUE_PER_RANK);
+        this.magecraftMasteries = UnitRankedAttributesGroup.initializeRankedAttributesFromRankLetterRecord(unitSaintGraphSkilLProps.unitMagecraftMasteryProps, SKILL_MODIFIER_VALUE_PER_RANK);
+        this.mysticEyes = UnitRankedAttributesGroup.initializeRankedAttributesFromRankLetterRecord(unitSaintGraphSkilLProps.unitMysticEyesProps, PARAMETER_MODIFIER_VALUE_PER_RANK);
+        this.nonHumanRanks = UnitRankedAttributesGroup.initializeRankedAttributesFromRankLetterRecord(unitSaintGraphSkilLProps.unitNonHumanRankProps, PARAMETER_MODIFIER_VALUE_PER_RANK);
+
+        this.hitPoints = this.initializeHitPoints();
+        this.mana = this.initializeMana();
+        this.fateDice = this.initializeFateDice();
+
+        this.initiative = this.initializeInititiative();
+    }
+
+    private initializeHitPoints() {
+        const endurance = this.parameters.unitRankedAttributes[ParameterType.Endurance].rankedAttribute;
+        const hitPointsFromEnd = new AttributeDerivedStat(endurance, HP_VALUE_PER_END_RANK);
+        const hitPoints = new VariableStat({
+            minValue: MIN_HP_VALUE,
+            cumulativeAttributeDerivedStats: {
+                [ParameterType.Endurance]: hitPointsFromEnd
+            }
+        });
+        return hitPoints;
+    }
+
+    private initializeMana(){
+        const magic = this.parameters.unitRankedAttributes[ParameterType.Magic].rankedAttribute;
+        const manaFromMag = new AttributeDerivedStat(magic, MANA_VALUE_PER_MAG_RANK);
+        const mana = new VariableStat({
+            cumulativeAttributeDerivedStats: {
+                [ParameterType.Magic]: manaFromMag
+            }
+        });
+        return mana;
+    }
+
+    private initializeFateDice(){
+        const luck = this.parameters.unitRankedAttributes[ParameterType.Luck].rankedAttribute;
+        const fateDiceFromLuk = new AttributeDerivedStat(luck,FATE_DICE_PER_LUCK_RANK);
+        const fateDice = new VariableStat({
+            cumulativeAttributeDerivedStats: {
+                [ParameterType.Luck]: fateDiceFromLuk
+            },
+            initialCurrentValue: fateDiceFromLuk.getStatValue()
+        });
+        return fateDice;
+    }
+
+    private initializeInititiative(){
+        const agility = this.parameters.unitRankedAttributes[ParameterType.Agility].rankedAttribute;
+        const initiativeFromAgility = new AttributeDerivedStat(agility, RANK_VALUE);
+        const initiative = new Stat({
+            cumulativeAttributeDerivedStats: {
+                [ParameterType.Agility]: initiativeFromAgility
+            }
+        });
+        const unitInitiative = new UnitDerivedStat({
+            stat: initiative
+        });
+        return unitInitiative;
     }
 };

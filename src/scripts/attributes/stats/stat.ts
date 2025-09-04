@@ -3,23 +3,30 @@ import { HirearchicalAttributesDerivedStat } from "./hirearchicalAttributeDerive
 
 export interface StatProps {
     inherentValue?: number,
-    statValuesFromAttributes?: Record<string, AttributeDerivedStat>;
+    minValue?: number;
+    cumulativeAttributeDerivedStats?: Record<string, AttributeDerivedStat>;
+    hirearchicalAttribtueDerivedStats?: HirearchicalAttributesDerivedStat;
 }
 
 export class Stat {
     readonly inherentValue: number;
+    readonly minValue: number;
     readonly cumulativeStatValuesFromAttributes?: Record<string, AttributeDerivedStat>;
     readonly hirearchicalStatValueFromAttributes?: HirearchicalAttributesDerivedStat
     value: number;
 
     constructor(props: StatProps){
         this.inherentValue = props.inherentValue ? props.inherentValue : 0;
-        this.cumulativeStatValuesFromAttributes = props.statValuesFromAttributes;
+        this.minValue = props.minValue ? props.minValue : 0;
+        this.cumulativeStatValuesFromAttributes = props.cumulativeAttributeDerivedStats;
+        this.hirearchicalStatValueFromAttributes = props.hirearchicalAttribtueDerivedStats;
         this.value = this.initializeStatValue();
     }
-    
+
     initializeStatValue(){
-        return this.inherentValue + this.getCumulativeStatValueFromAttributes() + this.getHirearchicalAttributesDerivedStat();
+        const valueFromStats = this.getCumulativeStatValueFromAttributes() + this.getHirearchicalAttributesDerivedStat();
+        const derivedValue = this.inherentValue + valueFromStats;
+        return Math.max(this.minValue, derivedValue);
     }
 
     updateStatValue(){
