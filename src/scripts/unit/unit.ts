@@ -5,7 +5,7 @@ import { PARAMETER_MODIFIER_VALUE_PER_RANK, RANK_VALUE, SKILL_MODIFIER_VALUE_PER
 import { VariableStat } from "../attributes/stats/variableStat";
 import { UnitDerivedStat } from "./unitDerivedStat";
 import { AttributeDerivedStat } from "../attributes/stats/attributeDerivedStat";
-import { FATE_DICE_PER_LUCK_RANK, HP_VALUE_PER_END_RANK, MANA_VALUE_PER_MAG_RANK, MIN_HP_VALUE } from "../../constants/derivedStatValuesPerRank";
+import { FATE_DICE_PER_LUCK_RANK, HP_VALUE_PER_END_RANK, INHERENT_MOVEMENT_VALUE, MANA_VALUE_PER_MAG_RANK, MIN_HP_VALUE } from "../../constants/derivedStatValuesPerRank";
 import { Stat } from "../attributes/stats/stat";
 import { UnitInjuries } from "./unitInjuries";
 
@@ -74,6 +74,7 @@ export class Unit {
     readonly mana: VariableStat;
     readonly fateDice: VariableStat;
     readonly initiative: UnitDerivedStat;
+    readonly movement: VariableStat
 
 
     constructor(name: string, unitProps: UnitProps) {
@@ -98,8 +99,8 @@ export class Unit {
         });
 
         this.initiative = this.initializeInititiative();
+        this.movement = this.initializeMovement();
     }
-
 
     private initializeHitPoints() {
         const endurance = this.parameters.unitRankedAttributes[ParameterType.Endurance].rankedAttribute;
@@ -148,5 +149,20 @@ export class Unit {
             stat: initiative
         });
         return unitInitiative;
+    }
+
+    private initializeMovement(){
+        const agility = this.parameters.unitRankedAttributes[ParameterType.Agility].rankedAttribute;
+        const additionalMovementFromAgility = new AttributeDerivedStat(agility, RANK_VALUE);
+        const strength = this.parameters.unitRankedAttributes[ParameterType.Strength].rankedAttribute;
+        const additionalMovementFromStrength = new AttributeDerivedStat(strength, RANK_VALUE);
+        const movement = new VariableStat({
+            inherentValue: INHERENT_MOVEMENT_VALUE,
+            cumulativeAttributeDerivedStats: {
+                [ParameterType.Agility]: additionalMovementFromAgility,
+                [ParameterType.Strength]: additionalMovementFromStrength
+            }
+        });
+        return movement;
     }
 };

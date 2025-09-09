@@ -1,24 +1,22 @@
 import { Stat } from "../attributes/stats/stat";
+import { RollModifier } from "../rolls/modifiers/rollModifier";
 import { getRecordSum } from "../utils/recordUtils";
 
 export interface UnitDerivedStatProps {
     readonly stat: Stat;
-    readonly specificBonuses?: Record<string, number>;
-    readonly specificPenalties?: Record<string, number>;
+    readonly modifiers?: Record<string, RollModifier>;
 }
 
 export class UnitDerivedStat {
     readonly stat: Stat;
-    readonly specificBonuses: Record<string, number>;
-    readonly specificPenalties: Record<string, number>;
+    readonly modifiers: Record<string, RollModifier>;
     
     constructor(props: UnitDerivedStatProps){
         this.stat = props.stat;
-        this.specificBonuses = props.specificBonuses ? props.specificBonuses : {};
-        this.specificPenalties = props.specificPenalties ? props.specificPenalties : {};
+        this.modifiers = props.modifiers ? props.modifiers : {};
     }
 
     getValue(){
-        return this.stat.value + getRecordSum(this.specificBonuses) - getRecordSum(this.specificPenalties)
+        return this.stat.value + getRecordSum(this.modifiers);
     }
 }

@@ -1,17 +1,17 @@
 import { RankedAttribute } from "../attributes/rankedAttributes/rankedAttribute"
+import { RollModifier } from "../rolls/modifiers/rollModifier";
 import { getRecordSum } from "../utils/recordUtils";
 
 export class UnitRankedAttribute {
     readonly rankedAttribute: RankedAttribute;
-    additionalModifierBonuses: Record<string, number> = {};
-    modifierPenalties: Record<string, number> = {};
+    modifiers: Record<string, RollModifier> = {};
 
     constructor(rankedAttribute: RankedAttribute){
         this.rankedAttribute = rankedAttribute;
     }
 
     getCheckBonus(): number {
-        return this.rankedAttribute.getModifier() + getRecordSum(this.additionalModifierBonuses) - getRecordSum(this.modifierPenalties);
+        return this.rankedAttribute.getModifier() + getRecordSum(this.modifiers);
     }
 
 }

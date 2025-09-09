@@ -9,3 +9,5 @@ export const MANA_VALUE_PER_MAG_RANK = 20;
 
 export const FATE_DICE_PER_LUCK_RANK = 1;
 
+export const INHERENT_MOVEMENT_VALUE = 5;
+
