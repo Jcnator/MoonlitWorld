@@ -1,4 +1,4 @@
-import { ExpertiseSkillType, ParameterType } from "../../constants/attributeTypes";
+import { ExpertiseSkillType, InjurySeverity, ParameterType } from "../../constants/attributeTypes";
 import { MIN_MINOR_INJURIES, MIN_MODERATE_INJURIES, MINOR_INJURIES_PER_END_RANK } from "../../constants/derivedStatValuesPerRank";
 import { RANK_VALUE } from "../../constants/modifierValuesPerRank";
 import { RankedAttribute } from "../attributes/rankedAttributes/rankedAttribute";
@@ -35,6 +35,45 @@ export class UnitInjuries {
         return leftOverSevere;
     }
 
+    get totalInjuries(): number {
+        return this.minor.currentValue + this.moderate.currentValue + this.severe.currentValue + this.critical;
+    }
+
+    get injuriesPenalty(): number {
+        return this.moderate.currentValue + this.severe.currentValue + this.critical;
+    }
+
+    get InjurySeverity(): InjurySeverity {
+        if (this.critical > 0){
+            return InjurySeverity.Critical;
+        }
+        if (this.severe.currentValue > 0){
+            return InjurySeverity.Severe;
+        }
+        if (this.moderate.currentValue > 0){
+            return InjurySeverity.Moderate;
+        }
+        if (this.minor.currentValue > 0){
+            return InjurySeverity.Minor;
+        }
+        return InjurySeverity.None;
+    }
+
+    isInjured(type: InjurySeverity): boolean {
+        switch(type){
+            case InjurySeverity.Minor:
+                return this.minor.currentValue > 0;
+            case InjurySeverity.Moderate:
+                return this.moderate.currentValue > 0;
+            case InjurySeverity.Severe:
+                return this.severe.currentValue > 0;
+            case InjurySeverity.Critical:
+                return this.critical > 0;
+            default:
+                return false;
+        }
+    }
+
     private initializeMinorInjuries(props: UnitInjuriesProps){
         const minorInjuriesFromEnd = new AttributeDerivedStat(props[ParameterType.Endurance], MINOR_INJURIES_PER_END_RANK);
         const minorInjuriesFromSurvival = new AttributeDerivedStat(props[ExpertiseSkillType.Survival], RANK_VALUE);
@@ -59,6 +98,5 @@ export class UnitInjuries {
             minValue: minInjuries
         });
         return minorInjuries;
-
     }
 }
